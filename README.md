@@ -1,6 +1,6 @@
 # rspec-unit
 
-Test::Unit compatibility for rspec.
+Test::Unit compatibility for Rspec.
 
 Just add this to your code:
 
@@ -32,36 +32,37 @@ You can also attach metadata to the entire class with the
       # ...
     end
 
-Each instance of `Rspec::Unit::TestCase` is equivalent to a
-rspec `describe` block, so it can also include `it` blocks,
+Each instance of `Rspec::Unit::TestCase` is equivalent to an
+Rspec `describe` block, so it can also include `it` blocks,
 `before` and `after` blocks, and nested `describe` blocks.  Test
 methods and `it` blocks can contain either assertions or `should`
 expressions.  `test` blocks (as found in Rails 2.x) also work.
 
-Additionally, assertions can be used inside ordinary rspec
+Additionally, assertions can be used inside ordinary Rspec
 examples.
 
 ## Rationale
 
+I originally wrote test/unit compatibility for Micronaut, a lightweight
+Rspec clone by Chad Humphries.  Micronaut has been rolled into Rspec as
+the core of Rspec 2, and I was able to move the test/unit compatibility
+over with minimal changes.
+
 The point of this gem is not that I think test/unit is a better way
-to write tests than the RSpec style.  I admit that I'm a TDD oldtimer
-who sees RSpec as mostly a cosmetic (rather than fundamental) change,
+to write tests than the Rspec style.  I admit that I'm a TDD oldtimer
+who sees Rspec as mostly a cosmetic (rather than fundamental) change,
 but that doesn't mean it's not an important change.  My curmudgeonly
 nature has its limits, and I do find specs a big improvement.
 
 So why rspec-unit?  Three reasons:
 
-1. I wanted to show off the generality of Rspec's architecture.
-   On the surface, Rspec might not seem all that compelling
-   (since it's basically an RSpec work-alike).  But it's really a
-   fantastic tool; it's just that the 
-   [innovation is all under the hood][uth], in a way that makes it
-   easy to change the surface aspects.  I hope rspec-unit can
+1. I wanted to show off the generality of Micronaut's (and now Rspec's)
+   architecture.  I hope rspec-unit can
    serve as an example for anyone who wants to experiment with new
    ways of expressing tests and specs on top of Rspec.
 2. Many projects with existing test/unit test suites might want to
-   benefit from Rspec's [metadata goodness][metadata], or begin
-   a gradual, piecemeal change to an RSpec style.  That's pretty
+   benefit from the [metadata goodness][metadata] in Rspec 2, or begin
+   a gradual, piecemeal change to an Rspec style.  That's pretty
    easy to do with rspec-unit.
 3. Even when writing specs and examples, I frequently encounter
    cases where an assertion is more expressive than a `should`
@@ -79,4 +80,4 @@ test/unit.
 
 ### Copyright
 
-Copyright (c) 2009 Glenn Vanderburg. See LICENSE for details.
+Copyright (c) 2009, 2010 Glenn Vanderburg. See LICENSE for details.
