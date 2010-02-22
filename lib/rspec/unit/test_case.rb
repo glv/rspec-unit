@@ -31,24 +31,9 @@ module Rspec
           
           install_setup_and_teardown(klass)
                     
-          # extra_metadata = {
-          #   :test_unit => true,
-          #   :caller => caller
-          # }
-          # extra_metadata[:file_path]   = extra_metadata[:caller][0].split(":")[0].strip
-          # extra_metadata[:line_number] = extra_metadata[:caller][0].split(":")[1].to_i
-          # 
-          # klass_name = klass.name(false)
-          # desc = (klass_name.nil? || klass_name.empty?) ? 'Anonymous TestCase' : "TestCase #{klass_name}"
-          # klass.set_it_up(desc, extra_metadata)
           name = test_case_name(klass)
           _build(klass, caller, [name, {}])
           klass.metadata[:example_group][:test_unit] = true
-        end
-        
-        def test_case_name(klass)
-          class_name = klass.name(false)
-          (class_name.nil? || class_name.empty?) ? 'Anonymous TestCase' : "TestCase #{class_name}"
         end
         
         def test_case_info(options)
@@ -81,6 +66,11 @@ module Rspec
         end
         
         private
+        
+        def test_case_name(klass)
+          class_name = klass.name(false)
+          (class_name.nil? || class_name.empty?) ? 'Anonymous TestCase' : "TestCase #{class_name}"
+        end
         
         def caller_lines
           @_caller_lines ||= {}
