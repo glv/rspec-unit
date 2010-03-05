@@ -103,7 +103,7 @@ describe Rspec::Unit::TestCase do
         @foo.class_eval do
           def test_bar; end
         end
-        @foo.expects(:test_bar).once
+        @foo.should_receive(:test_bar).once
         run_tests(@foo)
       end
     end
@@ -115,14 +115,12 @@ describe Rspec::Unit::TestCase do
           def test_baz; end
         end
       
-        test_run = sequence('test_run')
-      
-        @foo.expects(:setup)   .once.in_sequence(test_run)
-        @foo.expects(:test_bar).once.in_sequence(test_run)
-        @foo.expects(:teardown).once.in_sequence(test_run)
-        @foo.expects(:setup)   .once.in_sequence(test_run)
-        @foo.expects(:test_baz).once.in_sequence(test_run)
-        @foo.expects(:teardown).once.in_sequence(test_run)
+        @foo.should_receive(:setup)   .once.ordered
+        @foo.should_receive(:test_bar).once.ordered
+        @foo.should_receive(:teardown).once.ordered
+        @foo.should_receive(:setup)   .once.ordered
+        @foo.should_receive(:test_baz).once.ordered
+        @foo.should_receive(:teardown).once.ordered
       
         run_tests(@foo)
       end
@@ -361,7 +359,7 @@ describe Rspec::Unit::TestCase do
           def test_bar; end
         end
       
-        @foo.expects(:bar).once
+        @foo.should_receive(:bar).once
         run_tests(@foo)
       end
     end
@@ -373,7 +371,7 @@ describe Rspec::Unit::TestCase do
           def test_bar; end
         end
 
-        @foo.expects(:bar).once
+        @foo.should_receive(:bar).once
         run_tests(@foo)
       end
     end

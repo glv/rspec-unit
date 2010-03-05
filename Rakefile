@@ -1,6 +1,8 @@
 require 'rubygems'
 require 'rake'
 
+require File.dirname(__FILE__) + '/rspec-dev-setup' if File.exists?(File.dirname(__FILE__) + '/rspec-dev-setup.rb')
+
 begin
   require 'jeweler'
   Jeweler::Tasks.new do |gem|

@@ -1,5 +1,7 @@
 require 'rubygems'
 
+require File.dirname(__FILE__) + '/../rspec-dev-setup' if File.exists?(File.dirname(__FILE__) + '/../rspec-dev-setup.rb')
+
 require 'rspec'
 gem 'mocha'
 
@@ -31,7 +33,7 @@ def in_editor?
 end
 
 Rspec.configure do |c|
-  c.mock_framework = :mocha
+  c.mock_framework = :rspec
   c.filter_run :focused => true
   c.run_all_when_everything_filtered = true
   c.color_enabled = !in_editor?
