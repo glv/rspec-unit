@@ -2,7 +2,7 @@ def rcr?
   ENV['RUN_CODE_RUN'] == 'true'
 end
 
-system("bundle install --disable-shared-gems") if rcr?
+system("bundle install --disable-shared-gems")
 
 begin
   # Try to require the preresolved locked set of gems.
