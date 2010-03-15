@@ -1,9 +1,15 @@
-require 'rubygems'
-
-require File.dirname(__FILE__) + '/../rspec-dev-setup' if File.exists?(File.dirname(__FILE__) + '/../rspec-dev-setup.rb')
+begin
+  # Try to require the preresolved locked set of gems.
+  require File.expand_path('../../.bundle/environment', __FILE__)
+rescue LoadError
+  # Fall back on doing an unlocked resolve at runtime.
+  puts "Something's wrong with bundle configuration.  Falling back to RubyGems."
+  require "rubygems"
+  require "bundler"
+  Bundler.setup
+end
 
 require 'rspec'
-gem 'mocha'
 
 $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 

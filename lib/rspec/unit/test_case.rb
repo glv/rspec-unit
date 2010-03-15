@@ -65,7 +65,7 @@ module Rspec
       end
         
       def self.test_case_name(klass)
-        class_name = klass.name(false)
+        class_name = klass.name
         (class_name.nil? || class_name.empty?) ? 'Anonymous TestCase' : "TestCase #{class_name}"
       end
       
@@ -104,7 +104,7 @@ module Rspec
       
       def self.tests
         @tests ||= test_methods.sort.map do |m|
-          name = "#{metadata[:example_group][:name]}##{m}"
+          name = "#{display_name}##{m}"
           meta = (test_method_metadata[m] || {}).merge({:caller => caller_lines[m], 
                                                         :full_description => name,
                                                         :test_unit => true})

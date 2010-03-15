@@ -1,7 +1,19 @@
-require 'rubygems'
-require 'rake'
+def rcr?
+  ENV['RUN_CODE_RUN'] == 'true'
+end
 
-require File.dirname(__FILE__) + '/rspec-dev-setup' if File.exists?(File.dirname(__FILE__) + '/rspec-dev-setup.rb')
+system("bundle install --disable-shared-gems") if rcr?
+
+begin
+  # Try to require the preresolved locked set of gems.
+  require File.expand_path('../.bundle/environment', __FILE__)
+rescue LoadError
+  # Fall back on doing an unlocked resolve at runtime.
+  puts "Something's wrong with bundle configuration.  Falling back to RubyGems."
+  require "rubygems"
+  require "bundler"
+  Bundler.setup
+end
 
 begin
   require 'jeweler'
@@ -40,12 +52,7 @@ task :default => :examples
 
 require 'rake/rdoctask'
 Rake::RDocTask.new do |rdoc|
-  if File.exist?('VERSION.yml')
-    config = YAML.load(File.read('VERSION.yml'))
-    version = "#{config[:major]}.#{config[:minor]}.#{config[:patch]}"
-  else
-    version = ""
-  end
+  version = File.exist?('VERSION') ? File.read('VERSION') : ""
 
   rdoc.rdoc_dir = 'rdoc'
   rdoc.title = "rspec-unit #{version}"

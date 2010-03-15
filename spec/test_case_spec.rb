@@ -192,17 +192,17 @@ describe Rspec::Unit::TestCase do
       end
     end
 
-    it "sets :name to 'TestCase' and the class name if the class has one" do
-      SampleTestCaseForName.metadata[:example_group][:name].should == "TestCase SampleTestCaseForName"
+    it "sets :description to 'TestCase' and the class name if the class has one" do
+      SampleTestCaseForName.metadata[:example_group][:description].should == "TestCase SampleTestCaseForName"
     end
     
-    it "sets :name to 'Anonymous TestCase' for anonymous test classes" do
-      @foo.metadata[:example_group][:name].should == "Anonymous TestCase"
+    it "sets :description to 'Anonymous TestCase' for anonymous test classes" do
+      @foo.metadata[:example_group][:description].should == "Anonymous TestCase"
     end
     
-    it "sets :description to be the same as :name" do
-      @foo.metadata[:example_group][:description].should == @foo.metadata[:example_group][:name]
-      SampleTestCaseForName.metadata[:example_group][:description].should == SampleTestCaseForName.metadata[:example_group][:name]
+    it "sets :full_description to be the same as :description" do
+      @foo.metadata[:example_group][:full_description].should == @foo.metadata[:example_group][:description]
+      SampleTestCaseForName.metadata[:example_group][:full_description].should == SampleTestCaseForName.metadata[:example_group][:description]
     end
     
     it "adds :test_unit => true" do
