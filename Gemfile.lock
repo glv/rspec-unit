@@ -33,7 +33,6 @@ specs:
     version: 1.2.3
 - rspec-mocks: 
     version: 2.0.0.beta.3
-hash: 52c8426bd6633bf8e04b51a60c771b9cdce632ef
-sources: 
-- Rubygems: 
-    uri: http://gemcutter.org
+hash: 1dad17200ea062bfc31bce785603f49c9a6ccf6c
+sources: []
+

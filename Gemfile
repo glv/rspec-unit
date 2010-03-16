@@ -1,7 +1,3 @@
-source :gemcutter
-
-# path File.expand_path('../vendor/gems', __FILE__)
-
 gem 'rspec', '>= 2.0.0.beta.3'
 
 group :test do
