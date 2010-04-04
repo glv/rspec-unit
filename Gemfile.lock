@@ -7,7 +7,7 @@ dependencies:
   rspec: 
     group: 
     - :default
-    version: ">= 2.0.0.beta.3"
+    version: ">= 2.0.0.beta.5"
   jeweler: 
     group: 
     - :release
@@ -15,24 +15,25 @@ dependencies:
 specs: 
 - rake: 
     version: 0.8.7
-- rspec-core: 
-    version: 2.0.0.beta.3
-- rspec: 
-    version: 2.0.0.beta.3
-- rubyforge: 
-    version: 2.0.4
-- rspec-expectations: 
-    version: 2.0.0.beta.3
-- gemcutter: 
-    version: 0.5.0
-- jeweler: 
-    version: 1.4.0
-- git: 
-    version: 1.2.5
 - json_pure: 
     version: 1.2.3
+- gemcutter: 
+    version: 0.5.0
+- git: 
+    version: 1.2.5
+- rubyforge: 
+    version: 2.0.4
+- jeweler: 
+    version: 1.4.0
+- rspec-core: 
+    version: 2.0.0.beta.5
+- rspec-expectations: 
+    version: 2.0.0.beta.5
 - rspec-mocks: 
-    version: 2.0.0.beta.3
-hash: 1dad17200ea062bfc31bce785603f49c9a6ccf6c
-sources: []
-
+    version: 2.0.0.beta.5
+- rspec: 
+    version: 2.0.0.beta.5
+hash: 810abde8fee4cc8af22ca62810a28b4f24fded08
+sources: 
+- Rubygems: 
+    uri: http://gemcutter.org

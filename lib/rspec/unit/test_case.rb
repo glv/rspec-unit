@@ -23,7 +23,7 @@ module Rspec
 
       alias_example_to :test, :test_unit => true
       
-      @configuration = Rspec::Core.configuration
+      @configuration = Rspec.configuration
       
       def self.inherited(klass)
         super
