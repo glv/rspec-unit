@@ -6,3 +6,4 @@ pkg
 rspec-dev-setup.rb
 .rvmrc
 .bundle
+vendor
