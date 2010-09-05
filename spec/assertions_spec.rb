@@ -6,8 +6,8 @@ require File.expand_path(File.dirname(__FILE__) + "/spec_helper")
 
 # This is borrowed with minor changes from test/unit.  I'm leaving it in test/unit format
 # rather than converting to rspec-style.  ---glv
-class TC_Assertions < Rspec::Unit::TestCase
-  AssertionFailedError = Rspec::Unit::AssertionFailedError
+class TC_Assertions < RSpec::Unit::TestCase
+  AssertionFailedError = RSpec::Unit::AssertionFailedError
   
   def check(value, message="")
     add_assertion

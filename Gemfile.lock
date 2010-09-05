@@ -1,39 +1,30 @@
---- 
-dependencies: 
-  rake: 
-    group: 
-    - :test
-    version: ">= 0.8.7"
-  rspec: 
-    group: 
-    - :default
-    version: ">= 2.0.0.beta.5"
-  jeweler: 
-    group: 
-    - :release
-    version: ">= 1.4.0"
-specs: 
-- rake: 
-    version: 0.8.7
-- json_pure: 
-    version: 1.2.3
-- gemcutter: 
-    version: 0.5.0
-- git: 
-    version: 1.2.5
-- rubyforge: 
-    version: 2.0.4
-- jeweler: 
-    version: 1.4.0
-- rspec-core: 
-    version: 2.0.0.beta.5
-- rspec-expectations: 
-    version: 2.0.0.beta.5
-- rspec-mocks: 
-    version: 2.0.0.beta.5
-- rspec: 
-    version: 2.0.0.beta.5
-hash: 810abde8fee4cc8af22ca62810a28b4f24fded08
-sources: 
-- Rubygems: 
-    uri: http://gemcutter.org
+GEM
+  remote: http://rubygems.org/
+  specs:
+    diff-lcs (1.1.2)
+    gemcutter (0.6.1)
+    git (1.2.5)
+    jeweler (1.4.0)
+      gemcutter (>= 0.1.0)
+      git (>= 1.2.5)
+      rubyforge (>= 2.0.0)
+    json_pure (1.4.6)
+    rake (0.8.7)
+    rspec (2.0.0.beta.20)
+      rspec-core (= 2.0.0.beta.20)
+      rspec-expectations (= 2.0.0.beta.20)
+      rspec-mocks (= 2.0.0.beta.20)
+    rspec-core (2.0.0.beta.20)
+    rspec-expectations (2.0.0.beta.20)
+      diff-lcs (>= 1.1.2)
+    rspec-mocks (2.0.0.beta.20)
+    rubyforge (2.0.4)
+      json_pure (>= 1.1.7)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  jeweler (>= 1.4.0)
+  rake (>= 0.8.7)
+  rspec (= 2.0.0.beta.20)

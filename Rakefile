@@ -1,19 +1,4 @@
-def rcr?
-  ENV['RUN_CODE_RUN'] == 'true'
-end
-
-system("bundle check || bundle install --disable-shared-gems")
-
-begin
-  # Try to require the preresolved locked set of gems.
-  require File.expand_path('../.bundle/environment', __FILE__)
-rescue LoadError
-  # Fall back on doing an unlocked resolve at runtime.
-  puts "Something's wrong with bundle configuration.  Falling back to RubyGems."
-  require "rubygems"
-  require "bundler"
-  Bundler.setup
-end
+require 'bundler/setup'
 
 begin
   require 'jeweler'
@@ -24,7 +9,7 @@ begin
     gem.homepage = "http://github.com/glv/rspec-unit"
     gem.authors = ["Glenn Vanderburg"]
     gem.rubyforge_project = "rspec-unit"
-    gem.add_dependency('rspec', '>= 2.0.0.a7')
+    gem.add_dependency('rspec', '>= 2.0.0.beta.5')
     gem.has_rdoc = false
     gem.files =  FileList["[A-Z]*", "{bin,lib,examples}/**/*"] 
     gem.rubyforge_project = 'glv' 
@@ -37,12 +22,12 @@ rescue LoadError
 end
 
 require 'rspec/core/rake_task'
-Rspec::Core::RakeTask.new(:examples) do |examples|
+RSpec::Core::RakeTask.new(:examples) do |examples|
   examples.pattern = 'spec/**/*_spec.rb'
   examples.ruby_opts = '-Ilib -Ispec'
 end
 
-Rspec::Core::RakeTask.new(:rcov) do |examples|
+RSpec::Core::RakeTask.new(:rcov) do |examples|
   examples.pattern = 'spec/**/*_spec.rb'
   examples.rcov_opts = '-Ilib -Ispec -x "/Library/Ruby/Gems,^spec/"'
   examples.rcov = true

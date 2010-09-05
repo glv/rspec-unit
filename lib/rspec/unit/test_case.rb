@@ -1,10 +1,10 @@
 require 'rspec/unit/assertions'
 
-module Rspec
+module RSpec
   
   module Core
     class ExampleGroup
-      include ::Rspec::Unit::Assertions
+      include ::RSpec::Unit::Assertions
     end
   
     class <<Runner
@@ -14,16 +14,16 @@ module Rspec
   end
   
   module Unit
-    class AssertionFailedError < Rspec::Matchers::MatcherError
+    class AssertionFailedError < RSpec::Matchers::MatcherError
     end
     
-    class TestCase < Rspec::Core::ExampleGroup
+    class TestCase < RSpec::Core::ExampleGroup
       
       TEST_METHOD_PATTERN = /^test_/
 
       alias_example_to :test, :test_unit => true
       
-      @configuration = Rspec.configuration
+      @configuration = RSpec.configuration
       
       def self.inherited(klass)
         super
@@ -31,8 +31,10 @@ module Rspec
         install_setup_and_teardown(klass)
                   
         name = test_case_name(klass)
-        _build(klass, caller, [name, {}])
+        klass.set_it_up(name, {:caller => caller})
         klass.metadata[:example_group][:test_unit] = true
+        children << klass
+        world.example_groups << klass
       end
       
       def self.test_case_info(options)
@@ -56,12 +58,12 @@ module Rspec
         @tc_examples ||= ExamplesCollection.new(self, super)
       end
       
-      def self.ancestors(superclass_last=false)
-        superclass_last ? super[0..-2] : super[1..-1]
+      def self.ancestors
+        super[0..-2]
       end
       
       def self.to_s
-        self == Rspec::Unit::TestCase ? 'Rspec::Unit::TestCase' : super
+        self == RSpec::Unit::TestCase ? 'RSpec::Unit::TestCase' : super
       end
         
       def self.test_case_name(klass)
@@ -80,7 +82,7 @@ module Rspec
       def self.install_setup_and_teardown(klass)
         # Only do this for direct descendants, because test/unit chains
         # fixtures through explicit calls to super.
-        if self == Rspec::Unit::TestCase
+        if self == RSpec::Unit::TestCase
           klass.class_eval do
             before {setup}
             after {teardown}
@@ -169,8 +171,8 @@ module Rspec
           core_examples.empty? && number_of_tests == 0
         end
         
-        def first
-          core_examples.first || tests.first
+        def last
+          tests.last || core_examples.last
         end
         
         def <<(example)
@@ -185,9 +187,15 @@ module Rspec
         def to_ary
           core_examples + tests
         end
+        
+        def uniq
+          to_ary.uniq
+        end
       end
     
     end
+    
+    RSpec.world.example_groups.delete(::RSpec::Unit::TestCase)
   end
   
   module Core

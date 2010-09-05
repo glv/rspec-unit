@@ -1,17 +1,17 @@
 require File.expand_path(File.dirname(__FILE__) + "/spec_helper")
 
-describe Rspec::Core::ExampleGroup do
+describe RSpec::Core::ExampleGroup do
   it "supports using assertions in examples" do
     lambda {assert_equal 1, 1}.should_not raise_error
   end
 end
 
-describe Rspec::Unit::TestCase do
+describe "RSpec::Unit::TestCase" do
   before do
-    @foo = Class.new(Rspec::Unit::TestCase)
+    @foo = Class.new(RSpec::Unit::TestCase)
     @foo_definition_line = __LINE__ - 1
     @caller_at_foo_definition = caller
-    @formatter = Rspec::Core::Formatters::BaseFormatter.new
+    @formatter = RSpec::Core::Formatters::BaseFormatter.new('')
   end
   
   after do
@@ -19,7 +19,6 @@ describe Rspec::Unit::TestCase do
   end
   
   def run_tests(klass)
-    klass.examples_to_run.replace(klass.examples)
     klass.run(@formatter)
   end
   
@@ -126,7 +125,7 @@ describe Rspec::Unit::TestCase do
       end
     end
     
-    it "records failed tests in Rspec style" do
+    it "records failed tests in RSpec style" do
       use_formatter(@formatter) do
         @foo.class_eval do
           def test_bar; flunk; end
@@ -147,8 +146,8 @@ describe Rspec::Unit::TestCase do
         @foo._passed.should == false
       end
     end
-
-    it "records passed tests in Rspec style" do
+  
+    it "records passed tests in RSpec style" do
       use_formatter(@formatter) do
         @foo.class_eval do
           def test_bar; assert true; end
@@ -171,27 +170,33 @@ describe Rspec::Unit::TestCase do
     end
   end
   
+  describe "inherited" do
+    it "adds the new subclass to RSpec.world.example_groups" do
+      sandboxed do
+        class SampleTestCase < RSpec::Unit::TestCase
+        end
+        RSpec.world.example_groups.should == [SampleTestCase]
+      end
+    end
+  end
+  
   describe "ancestors" do
     before do
       @bar = Class.new(@foo)
       remove_last_describe_from_world
     end
     
-    it "removes TestCase from the beginning if superclass_last is false" do
-      @bar.ancestors.should == [@foo, @bar]
-    end
-    
-    it "removes TestCase from the end if superclass_last is true" do
-      @bar.ancestors(true).should == [@bar, @foo]
+    it "removes TestCase from the end" do
+      @bar.ancestors.should == [@bar, @foo]
     end
   end
-
+  
   describe "test class metadata" do
-    isolate_example_group do
-      class SampleTestCaseForName < Rspec::Unit::TestCase
+    sandboxed do
+      class SampleTestCaseForName < RSpec::Unit::TestCase
       end
     end
-
+  
     it "sets :description to 'TestCase' and the class name if the class has one" do
       SampleTestCaseForName.metadata[:example_group][:description].should == "TestCase SampleTestCaseForName"
     end
@@ -254,7 +259,7 @@ describe Rspec::Unit::TestCase do
       end
       @foo.examples.first.metadata[:description].should == 'test_baz'
     end
-
+  
     it "uses a test method's name with the class name as its :full_description" do
       @foo.class_eval do
         def test_baz; end
@@ -268,7 +273,7 @@ describe Rspec::Unit::TestCase do
       end
       test_baz_metadata[:test_unit].should be_true
     end    
-
+  
     it "sets :file_path to the file where the method is defined" do
       @foo.class_eval do
         def test_baz; end
@@ -306,7 +311,7 @@ describe Rspec::Unit::TestCase do
       test_baz_metadata[:caller].first.should == @foo.examples.first.metadata[:location]
       test_baz_metadata[:caller].size.should == caller.size + 3
     end        
-
+  
     it "records test_info options for next test method" do
       @foo.class_eval do
         test_info :foo => :bar
@@ -370,7 +375,7 @@ describe Rspec::Unit::TestCase do
           after {bar}
           def test_bar; end
         end
-
+  
         @foo.should_receive(:bar).once
         run_tests(@foo)
       end
