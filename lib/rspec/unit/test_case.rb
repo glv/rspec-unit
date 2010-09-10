@@ -30,8 +30,7 @@ module RSpec
         
         install_setup_and_teardown(klass)
                   
-        name = test_case_name(klass)
-        klass.set_it_up(name, {:caller => caller})
+        klass.set_it_up(test_case_name(klass), {:caller => caller})
         klass.metadata[:example_group][:test_unit] = true
         children << klass
         world.example_groups << klass
@@ -47,8 +46,8 @@ module RSpec
       
       def self.method_added(id)
         name = id.to_s
-        caller_lines[name] = caller
         if test_method?(name)
+          caller_lines[name] = caller
           test_method_metadata[name] = @_metadata_for_next
           @_metadata_for_next = nil
         end
@@ -63,7 +62,7 @@ module RSpec
       end
       
       def self.to_s
-        self == RSpec::Unit::TestCase ? 'RSpec::Unit::TestCase' : super
+        self == ::RSpec::Unit::TestCase ? 'RSpec::Unit::TestCase' : super
       end
         
       def self.test_case_name(klass)
@@ -82,7 +81,7 @@ module RSpec
       def self.install_setup_and_teardown(klass)
         # Only do this for direct descendants, because test/unit chains
         # fixtures through explicit calls to super.
-        if self == RSpec::Unit::TestCase
+        if self == ::RSpec::Unit::TestCase
           klass.class_eval do
             before {setup}
             after {teardown}
