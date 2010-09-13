@@ -1,28 +1,5 @@
 require File.expand_path(File.dirname(__FILE__) + "/spec_helper")
 
-describe "debugging mocks" do
-  before do
-    @foo = Class.new(RSpec::Unit::TestCase)
-    @foo_definition_line = __LINE__ - 1
-    @caller_at_foo_definition = caller
-    @formatter = RSpec::Core::Formatters::BaseFormatter.new('')
-  end
-  
-  it "should respond to setup_mocks_for_rspec" do
-    RSpec::Core::ExampleGroup.instance_methods.should include("setup_mocks_for_rspec")
-    self.class.instance_methods.should include("setup_mocks_for_rspec")
-    self.class.included_modules.should include(RSpec::Core::MockFrameworkAdapter)
-    respond_to?(:setup_mocks_for_rspec).should be_true
-    # should respond_to(:setup_mocks_for_rspec)
-  end
-  
-  it "should verify mock expectations" do
-    x = "foo"
-    x.should_receive(:length).once
-    x.length
-  end
-end
-
 describe RSpec::Core::ExampleGroup do
   it "supports using assertions in examples" do
     lambda {assert_equal 1, 1}.should_not raise_error
