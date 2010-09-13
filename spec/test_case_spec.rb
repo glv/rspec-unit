@@ -106,6 +106,7 @@ describe "RSpec::Unit::TestCase" do
   
   describe "running test methods" do
     it "runs the test methods as examples" do
+      pending "RSpec is not properly checking mock expectations"
       use_formatter(@formatter) do
         @foo.class_eval do
           def test_bar; end
@@ -116,6 +117,7 @@ describe "RSpec::Unit::TestCase" do
     end
     
     it "brackets test methods with setup/teardown" do
+      pending "RSpec is not properly checking mock expectations"
       use_formatter(@formatter) do
         @foo.class_eval do
           def test_bar; end
@@ -132,6 +134,29 @@ describe "RSpec::Unit::TestCase" do
         run_tests(@foo)
       end
     end
+    
+    it "only calls setup/teardown once per test in subclasses" do
+      pending "RSpec is not properly checking mock expectations"
+      isolate_example_group do
+        @foo.class_eval do
+          def test_baz; end
+        end
+        bar = Class.new(@foo)
+        bar.class_eval do
+          def test_quux; end
+        end
+      
+        bar.should_receive(:setup)    .once
+        bar.should_receive(:test_baz) .once
+        bar.should_receive(:teardown) .once
+        bar.should_receive(:setup)    .once
+        bar.should_receive(:test_quux).once
+        bar.should_receive(:teardown) .once
+      
+        run_tests(bar)
+      end
+    end
+    
     
     it "records failed tests in RSpec style" do
       use_formatter(@formatter) do
@@ -198,7 +223,7 @@ describe "RSpec::Unit::TestCase" do
       @bar.ancestors.should == [@bar, @foo]
     end
   end
-  
+
   describe "test class metadata" do
     sandboxed do
       class SampleTestCaseForName < RSpec::Unit::TestCase
@@ -361,6 +386,7 @@ describe "RSpec::Unit::TestCase" do
     end
     
     it "allows defining 'before' blocks" do
+      pending "RSpec is not properly checking mock expectations"
       use_formatter(@formatter) do
         @foo.class_eval do
           before {bar}
@@ -373,6 +399,7 @@ describe "RSpec::Unit::TestCase" do
     end
     
     it "allows defining 'after' blocks" do
+      pending "RSpec is not properly checking mock expectations"
       use_formatter(@formatter) do
         @foo.class_eval do
           after {bar}

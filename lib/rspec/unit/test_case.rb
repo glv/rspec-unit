@@ -18,8 +18,6 @@ module RSpec
 
       alias_example_to :test, :test_unit => true
       
-      @configuration = RSpec.configuration
-      
       def self.inherited(klass)
         super
         
@@ -56,10 +54,6 @@ module RSpec
         super[0..-2]
       end
       
-      def self.to_s
-        self == ::RSpec::Unit::TestCase ? 'RSpec::Unit::TestCase' : super
-      end
-        
       def self.test_case_name(klass)
         class_name = klass.name
         (class_name.nil? || class_name.empty?) ? '<Anonymous TestCase>' : class_name
