@@ -1,5 +1,28 @@
 require File.expand_path(File.dirname(__FILE__) + "/spec_helper")
 
+describe "debugging mocks" do
+  before do
+    @foo = Class.new(RSpec::Unit::TestCase)
+    @foo_definition_line = __LINE__ - 1
+    @caller_at_foo_definition = caller
+    @formatter = RSpec::Core::Formatters::BaseFormatter.new('')
+  end
+  
+  it "should respond to setup_mocks_for_rspec" do
+    RSpec::Core::ExampleGroup.instance_methods.should include("setup_mocks_for_rspec")
+    self.class.instance_methods.should include("setup_mocks_for_rspec")
+    self.class.included_modules.should include(RSpec::Core::MockFrameworkAdapter)
+    respond_to?(:setup_mocks_for_rspec).should be_true
+    # should respond_to(:setup_mocks_for_rspec)
+  end
+  
+  it "should verify mock expectations" do
+    x = "foo"
+    x.should_receive(:length).once
+    x.length
+  end
+end
+
 describe RSpec::Core::ExampleGroup do
   it "supports using assertions in examples" do
     lambda {assert_equal 1, 1}.should_not raise_error
@@ -12,14 +35,6 @@ describe "RSpec::Unit::TestCase" do
     @foo_definition_line = __LINE__ - 1
     @caller_at_foo_definition = caller
     @formatter = RSpec::Core::Formatters::BaseFormatter.new('')
-  end
-  
-  after do
-    remove_last_describe_from_world
-  end
-  
-  def run_tests(klass)
-    klass.run(@formatter)
   end
   
   describe "identifying test methods" do
@@ -76,22 +91,19 @@ describe "RSpec::Unit::TestCase" do
       @foo.class_eval do
         def test_bar; end
       end
-      isolate_example_group do
-        bar = Class.new(@foo)
-        bar.examples.size.should == 1
-        bar.examples.first.metadata[:description].should == 'test_bar'
-      end
+
+      bar = Class.new(@foo)
+      bar.examples.size.should == 1
+      bar.examples.first.metadata[:description].should == 'test_bar'
     end
   
     it "creates examples for methods newly added to superclasses" do
-      isolate_example_group do
-        bar = Class.new(@foo)
-        @foo.class_eval do
-          def test_bar; end
-        end
-        bar.examples.size.should == 1
-        bar.examples.first.metadata[:description].should == 'test_bar'
+      bar = Class.new(@foo)
+      @foo.class_eval do
+        def test_bar; end
       end
+      bar.examples.size.should == 1
+      bar.examples.first.metadata[:description].should == 'test_bar'
     end
   
     it "creates examples for methods added by inclusion of a module" do
@@ -106,126 +118,147 @@ describe "RSpec::Unit::TestCase" do
   
   describe "running test methods" do
     it "runs the test methods as examples" do
-      pending "RSpec is not properly checking mock expectations"
-      use_formatter(@formatter) do
-        @foo.class_eval do
-          def test_bar; end
-        end
-        @foo.should_receive(:test_bar).once
-        run_tests(@foo)
+      @foo.metadata[:example_group][:invocation_count] = 0
+      @foo.class_eval do
+        def test_bar; self.class.metadata[:example_group][:invocation_count] += 1; end
       end
+      
+      @foo.run_all
+      @foo.metadata[:example_group][:invocation_count].should == 1
+    end
+    
+    it "runs the test methods as examples (with mocks)" do
+      pending "RSpec is not properly checking mock expectations"
+      @foo.class_eval do
+        def test_bar; end
+      end
+      @foo.should_receive(:test_bar).once
+      @foo.run_all
     end
     
     it "brackets test methods with setup/teardown" do
-      pending "RSpec is not properly checking mock expectations"
-      use_formatter(@formatter) do
-        @foo.class_eval do
-          def test_bar; end
-          def test_baz; end
-        end
-      
-        @foo.should_receive(:setup)   .once.ordered
-        @foo.should_receive(:test_bar).once.ordered
-        @foo.should_receive(:teardown).once.ordered
-        @foo.should_receive(:setup)   .once.ordered
-        @foo.should_receive(:test_baz).once.ordered
-        @foo.should_receive(:teardown).once.ordered
-      
-        run_tests(@foo)
+      @foo.metadata[:example_group][:invocations] = []
+      @foo.class_eval do
+        def setup; self.class.metadata[:example_group][:invocations] << 'setup'; end
+        def teardown; self.class.metadata[:example_group][:invocations] << 'teardown'; end
+        def test_bar; self.class.metadata[:example_group][:invocations] << 'test_bar'; end
+        def test_baz; self.class.metadata[:example_group][:invocations] << 'test_baz'; end
       end
+    
+      @foo.run_all
+      @foo.metadata[:example_group][:invocations].should == %w[setup test_bar teardown setup test_baz teardown]
+    end
+    
+    it "brackets test methods with setup/teardown (with mocks)" do
+      pending "RSpec is not properly checking mock expectations"
+      @foo.class_eval do
+        def test_bar; end
+        def test_baz; end
+      end
+    
+      @foo.should_receive(:setup)   .once.ordered
+      @foo.should_receive(:test_bar).once.ordered
+      @foo.should_receive(:teardown).once.ordered
+      @foo.should_receive(:setup)   .once.ordered
+      @foo.should_receive(:test_baz).once.ordered
+      @foo.should_receive(:teardown).once.ordered
+    
+      @foo.run_all
     end
     
     it "only calls setup/teardown once per test in subclasses" do
-      pending "RSpec is not properly checking mock expectations"
-      isolate_example_group do
-        @foo.class_eval do
-          def test_baz; end
-        end
-        bar = Class.new(@foo)
-        bar.class_eval do
-          def test_quux; end
-        end
-      
-        bar.should_receive(:setup)    .once
-        bar.should_receive(:test_baz) .once
-        bar.should_receive(:teardown) .once
-        bar.should_receive(:setup)    .once
-        bar.should_receive(:test_quux).once
-        bar.should_receive(:teardown) .once
-      
-        run_tests(bar)
+      @foo.class_eval do
+        def test_foo; self.class.metadata[:example_group][:invocations] << 'test_foo'; end
       end
+      bar = Class.new(@foo)
+      bar.metadata[:example_group][:invocations] = []
+      bar.class_eval do
+        def setup; self.class.metadata[:example_group][:invocations] << 'setup'; end
+        def teardown; self.class.metadata[:example_group][:invocations] << 'teardown'; end
+        def test_bar; self.class.metadata[:example_group][:invocations] << 'test_bar'; end
+      end
+    
+      bar.run_all
+      bar.metadata[:example_group][:invocations].should == %w[setup test_bar teardown setup test_foo teardown]
     end
     
-    
-    it "records failed tests in RSpec style" do
-      use_formatter(@formatter) do
-        @foo.class_eval do
-          def test_bar; flunk; end
-        end
-        run_tests(@foo)
-        @formatter.failed_examples.size.should == 1
+    it "only calls setup/teardown once per test in subclasses (with mocks)" do
+      pending "RSpec is not properly checking mock expectations"
+      @foo.class_eval do
+        def test_baz; end
       end
+      bar = Class.new(@foo)
+      bar.class_eval do
+        def test_quux; end
+      end
+    
+      bar.should_receive(:setup)    .once
+      bar.should_receive(:test_baz) .once
+      bar.should_receive(:teardown) .once
+      bar.should_receive(:setup)    .once
+      bar.should_receive(:test_quux).once
+      bar.should_receive(:teardown) .once
+    
+      bar.run_all
+    end
+        
+    it "records failed tests in RSpec style" do
+      @foo.class_eval do
+        def test_bar; flunk; end
+      end
+      @foo.run_all(@formatter)
+      @formatter.failed_examples.size.should == 1
     end
     
     it "indicates failed tests in test/unit style" do
-      use_formatter(@formatter) do
-        @foo.class_eval do
-          class <<self; attr_accessor :_passed; end
-          def test_bar; flunk; end
-          def teardown; self.class._passed = passed?; end
-        end
-        run_tests(@foo)
-        @foo._passed.should == false
+      @foo.class_eval do
+        class <<self; attr_accessor :_passed; end
+        def test_bar; flunk; end
+        def teardown; self.class._passed = passed?; end
       end
+      @foo.run_all
+      @foo._passed.should == false
     end
   
     it "records passed tests in RSpec style" do
-      use_formatter(@formatter) do
-        @foo.class_eval do
-          def test_bar; assert true; end
-        end
-        run_tests(@foo)
-        @formatter.failed_examples.should be_empty
+      @foo.class_eval do
+        def test_bar; assert true; end
       end
+      @foo.run_all(@formatter)
+      @formatter.failed_examples.should be_empty
     end
     
     it "indicates passed tests in test/unit style" do
-      use_formatter(@formatter) do
-        @foo.class_eval do
-          class <<self; attr_accessor :_passed; end
-          def test_bar; assert true; end
-          def teardown; self.class._passed = passed?; end
-        end
-        run_tests(@foo)
-        @foo._passed.should == true
+      @foo.class_eval do
+        class <<self; attr_accessor :_passed; end
+        def test_bar; assert true; end
+        def teardown; self.class._passed = passed?; end
       end
+      @foo.run_all
+      @foo._passed.should == true
     end
   end
   
   describe "inherited" do
     it "adds the new subclass to RSpec.world.example_groups" do
-      sandboxed do
-        class SampleTestCase < RSpec::Unit::TestCase
-        end
-        RSpec.world.example_groups.should == [SampleTestCase]
+      class SampleTestCase < RSpec::Unit::TestCase
       end
+      RSpec.world.example_groups.should == [@foo, SampleTestCase]
     end
   end
   
   describe "ancestors" do
     before do
       @bar = Class.new(@foo)
-      remove_last_describe_from_world
     end
     
     it "removes TestCase from the end" do
       @bar.ancestors.should == [@bar, @foo]
     end
   end
-
+  
   describe "test class metadata" do
-    sandboxed do
+    before do
       class SampleTestCaseForName < RSpec::Unit::TestCase
       end
     end
@@ -386,51 +419,65 @@ describe "RSpec::Unit::TestCase" do
     end
     
     it "allows defining 'before' blocks" do
-      pending "RSpec is not properly checking mock expectations"
-      use_formatter(@formatter) do
-        @foo.class_eval do
-          before {bar}
-          def test_bar; end
-        end
-      
-        @foo.should_receive(:bar).once
-        run_tests(@foo)
+      invocation_count = 0
+      @foo.class_eval do
+        before {invocation_count += 1}
+        def test_bar; end
       end
+    
+      @foo.run_all
+      invocation_count.should == 1
+    end
+    
+    it "allows defining 'before' blocks (with mocks)" do
+      pending "RSpec is not properly checking mock expectations"
+      @foo.class_eval do
+        before {bar}
+        def test_bar; end
+      end
+    
+      @foo.should_receive(:bar).once
+      @foo.run_all
     end
     
     it "allows defining 'after' blocks" do
-      pending "RSpec is not properly checking mock expectations"
-      use_formatter(@formatter) do
-        @foo.class_eval do
-          after {bar}
-          def test_bar; end
-        end
-  
-        @foo.should_receive(:bar).once
-        run_tests(@foo)
+      invocation_count = 0
+      @foo.class_eval do
+        after {invocation_count += 1}
+        def test_bar; end
       end
+
+      @foo.run_all
+      invocation_count.should == 1
+    end
+    
+    it "allows defining 'after' blocks (with mocks)" do
+      pending "RSpec is not properly checking mock expectations"
+      @foo.class_eval do
+        after {bar}
+        def test_bar; end
+      end
+
+      @foo.should_receive(:bar).once
+      @foo.run_all
     end
     
     it "allows examples to use instance variables created in 'setup'" do
-      use_formatter(@formatter) do
-        @foo.class_eval do
-          def setup; super; @quux = 42; end
-          it "quux" do @quux.should == 42 end
-        end
-        run_tests(@foo)
-        @formatter.failed_examples.should be_empty
+      @foo.class_eval do
+        def setup; super; @quux = 42; end
+        it "quux" do @quux.should == 42 end
       end
+      @foo.run_all(@formatter)
+      @formatter.failed_examples.should be_empty
     end
     
     it "allows test methods to use instance variables created in 'before' blocks" do
-      use_formatter(@formatter) do
-        @foo.class_eval do
-          before { @quux = 42 }
-          def test_quux; assert_equal 42, @quux; end
-        end
-        run_tests(@foo)
-        @formatter.failed_examples.should be_empty
+      @foo.class_eval do
+        before { @quux = 42 }
+        def test_quux; assert_equal 42, @quux; end
       end
+      @foo.run_all(@formatter)
+      @formatter.failed_examples.should be_empty
     end
   end
 
