@@ -48,12 +48,20 @@ describe "RSpec::Unit::TestCase" do
       @foo.examples.should be_empty
     end
   
-    it "ignores methods with good names but positive arity" do
+    it "ignores methods with good names but requiring parameters" do
       @foo.class_eval do
         def test_foo(a); end
         def test_bar(a, *b); end
       end
       @foo.examples.should be_empty
+    end
+    
+    it "notices methods that have only optional parameters" do
+      @foo.class_eval do
+        def test_foo(*a); end
+      end
+      @foo.examples.size.should == 1
+      @foo.examples.first.metadata[:description].should == 'test_foo'
     end
   
     it "creates an example to represent a test method" do
@@ -197,17 +205,12 @@ describe "RSpec::Unit::TestCase" do
       end
     end
   
-    it "sets :description to 'TestCase' and the class name if the class has one" do
-      SampleTestCaseForName.metadata[:example_group][:description].should == "TestCase SampleTestCaseForName"
+    it "sets :description to the class name if the class has a name" do
+      SampleTestCaseForName.metadata[:example_group][:description].should == "SampleTestCaseForName"
     end
     
-    it "sets :description to 'Anonymous TestCase' for anonymous test classes" do
-      @foo.metadata[:example_group][:description].should == "Anonymous TestCase"
-    end
-    
-    it "sets :full_description to be the same as :description" do
-      @foo.metadata[:example_group][:full_description].should == @foo.metadata[:example_group][:description]
-      SampleTestCaseForName.metadata[:example_group][:full_description].should == SampleTestCaseForName.metadata[:example_group][:description]
+    it "sets :description to '<Anonymous TestCase>' for anonymous test classes" do
+      @foo.metadata[:example_group][:description].should == "<Anonymous TestCase>"
     end
     
     it "adds :test_unit => true" do
@@ -236,7 +239,7 @@ describe "RSpec::Unit::TestCase" do
       @foo.metadata[:example_group][:describes].should be_nil
     end
     
-    it "records test_case_info options" do
+    it "records test_case_info metadata" do
       @foo.class_eval do
         test_case_info :foo => :bar
       end
@@ -260,11 +263,11 @@ describe "RSpec::Unit::TestCase" do
       @foo.examples.first.metadata[:description].should == 'test_baz'
     end
   
-    it "uses a test method's name with the class name as its :full_description" do
+    it "sets the test method's :full_description to ClassName#method_name" do
       @foo.class_eval do
         def test_baz; end
       end
-      test_baz_metadata[:full_description].should == 'Anonymous TestCase#test_baz'
+      test_baz_metadata[:full_description].should == "#{@foo.metadata[:example_group][:description]}#test_baz"
     end
     
     it "adds :test_unit => true" do
@@ -312,7 +315,7 @@ describe "RSpec::Unit::TestCase" do
       test_baz_metadata[:caller].size.should == caller.size + 3
     end        
   
-    it "records test_info options for next test method" do
+    it "records test_info metadata for next test method" do
       @foo.class_eval do
         test_info :foo => :bar
         def test_baz; end
@@ -320,7 +323,7 @@ describe "RSpec::Unit::TestCase" do
       test_baz_metadata[:foo].should == :bar
     end
     
-    it "records test_info options *only* for next test method" do
+    it "records test_info metadata *only* for next test method" do
       @foo.class_eval do
         test_info :foo => :bar
         def test_baz; end

@@ -62,7 +62,7 @@ module RSpec
         
       def self.test_case_name(klass)
         class_name = klass.name
-        (class_name.nil? || class_name.empty?) ? 'Anonymous TestCase' : "TestCase #{class_name}"
+        (class_name.nil? || class_name.empty?) ? '<Anonymous TestCase>' : class_name
       end
       
       def self.caller_lines
@@ -100,9 +100,8 @@ module RSpec
       
       def self.tests
         @tests ||= test_methods.sort.map do |m|
-          name = "#{display_name}##{m}"
           meta = (test_method_metadata[m] || {}).merge({:caller => caller_lines[m], 
-                                                        :full_description => name,
+                                                        :full_description => "#{display_name}##{m}",
                                                         :test_unit => true})
           Core::Example.new(self, m, meta, proc{execute(m)})
         end
