@@ -6,11 +6,6 @@ module RSpec
     class ExampleGroup
       include ::RSpec::Unit::Assertions
     end
-  
-    class <<Runner
-      alias :rspec_unit_original_installed_at_exit? :installed_at_exit?
-      def installed_at_exit?; true; end
-    end
   end
   
   module Unit
@@ -197,10 +192,4 @@ module RSpec
     RSpec.world.example_groups.delete(::RSpec::Unit::TestCase)
   end
   
-  module Core
-    class <<Runner
-      alias :installed_at_exit? :rspec_unit_original_installed_at_exit?
-      remove_method :rspec_unit_original_installed_at_exit?
-    end
-  end
 end
