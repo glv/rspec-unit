@@ -95,72 +95,34 @@ describe "RSpec::Unit::TestCase" do
   
   describe "running test methods" do
     it "runs the test methods as examples" do
-      @foo.metadata[:example_group][:invocation_count] = 0
-      @foo.class_eval do
-        def test_bar; self.class.metadata[:example_group][:invocation_count] += 1; end
-      end
-      
-      @foo.run_all
-      @foo.metadata[:example_group][:invocation_count].should == 1
-    end
-    
-    it "runs the test methods as examples (with mocks)" do
-      pending "RSpec is not properly checking mock expectations"
       @foo.class_eval do
         def test_bar; end
       end
-      @foo.should_receive(:test_bar).once
+      
+      eg_inst = mock_example_group_instance(@foo)
+      eg_inst.should_receive(:test_bar).once
+      
       @foo.run_all
     end
     
     it "brackets test methods with setup/teardown" do
-      @foo.metadata[:example_group][:invocations] = []
-      @foo.class_eval do
-        def setup; self.class.metadata[:example_group][:invocations] << 'setup'; end
-        def teardown; self.class.metadata[:example_group][:invocations] << 'teardown'; end
-        def test_bar; self.class.metadata[:example_group][:invocations] << 'test_bar'; end
-        def test_baz; self.class.metadata[:example_group][:invocations] << 'test_baz'; end
-      end
-    
-      @foo.run_all
-      @foo.metadata[:example_group][:invocations].should == %w[setup test_bar teardown setup test_baz teardown]
-    end
-    
-    it "brackets test methods with setup/teardown (with mocks)" do
-      pending "RSpec is not properly checking mock expectations"
       @foo.class_eval do
         def test_bar; end
         def test_baz; end
       end
     
-      @foo.should_receive(:setup)   .once.ordered
-      @foo.should_receive(:test_bar).once.ordered
-      @foo.should_receive(:teardown).once.ordered
-      @foo.should_receive(:setup)   .once.ordered
-      @foo.should_receive(:test_baz).once.ordered
-      @foo.should_receive(:teardown).once.ordered
+      eg_inst = mock_example_group_instance(@foo)
+      eg_inst.should_receive(:setup)   .once.ordered
+      eg_inst.should_receive(:test_bar).once.ordered
+      eg_inst.should_receive(:teardown).once.ordered
+      eg_inst.should_receive(:setup)   .once.ordered
+      eg_inst.should_receive(:test_baz).once.ordered
+      eg_inst.should_receive(:teardown).once.ordered
     
       @foo.run_all
     end
     
     it "only calls setup/teardown once per test in subclasses" do
-      @foo.class_eval do
-        def test_foo; self.class.metadata[:example_group][:invocations] << 'test_foo'; end
-      end
-      bar = Class.new(@foo)
-      bar.metadata[:example_group][:invocations] = []
-      bar.class_eval do
-        def setup; self.class.metadata[:example_group][:invocations] << 'setup'; end
-        def teardown; self.class.metadata[:example_group][:invocations] << 'teardown'; end
-        def test_bar; self.class.metadata[:example_group][:invocations] << 'test_bar'; end
-      end
-    
-      bar.run_all
-      bar.metadata[:example_group][:invocations].should == %w[setup test_bar teardown setup test_foo teardown]
-    end
-    
-    it "only calls setup/teardown once per test in subclasses (with mocks)" do
-      pending "RSpec is not properly checking mock expectations"
       @foo.class_eval do
         def test_baz; end
       end
@@ -169,12 +131,13 @@ describe "RSpec::Unit::TestCase" do
         def test_quux; end
       end
     
-      bar.should_receive(:setup)    .once
-      bar.should_receive(:test_baz) .once
-      bar.should_receive(:teardown) .once
-      bar.should_receive(:setup)    .once
-      bar.should_receive(:test_quux).once
-      bar.should_receive(:teardown) .once
+      eg_inst = mock_example_group_instance(bar)
+      eg_inst.should_receive(:setup)    .once.ordered
+      eg_inst.should_receive(:test_baz) .once.ordered
+      eg_inst.should_receive(:teardown) .once.ordered
+      eg_inst.should_receive(:setup)    .once.ordered
+      eg_inst.should_receive(:test_quux).once.ordered
+      eg_inst.should_receive(:teardown) .once.ordered
     
       bar.run_all
     end
@@ -396,46 +359,25 @@ describe "RSpec::Unit::TestCase" do
     end
     
     it "allows defining 'before' blocks" do
-      invocation_count = 0
-      @foo.class_eval do
-        before {invocation_count += 1}
-        def test_bar; end
-      end
-    
-      @foo.run_all
-      invocation_count.should == 1
-    end
-    
-    it "allows defining 'before' blocks (with mocks)" do
-      pending "RSpec is not properly checking mock expectations"
       @foo.class_eval do
         before {bar}
         def test_bar; end
       end
     
-      @foo.should_receive(:bar).once
+      eg_inst = mock_example_group_instance(@foo)
+      eg_inst.should_receive(:bar).once
+      
       @foo.run_all
     end
     
     it "allows defining 'after' blocks" do
-      invocation_count = 0
-      @foo.class_eval do
-        after {invocation_count += 1}
-        def test_bar; end
-      end
-
-      @foo.run_all
-      invocation_count.should == 1
-    end
-    
-    it "allows defining 'after' blocks (with mocks)" do
-      pending "RSpec is not properly checking mock expectations"
       @foo.class_eval do
         after {bar}
         def test_bar; end
       end
 
-      @foo.should_receive(:bar).once
+      eg_inst = mock_example_group_instance(@foo)
+      eg_inst.should_receive(:bar).once
       @foo.run_all
     end
     

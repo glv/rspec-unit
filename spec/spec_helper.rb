@@ -5,6 +5,12 @@ $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 
 require 'rspec-unit'
 
+def mock_example_group_instance(example_group)
+  eg_inst = example_group.new
+  example_group.stub(:new).and_return(eg_inst)
+  eg_inst
+end
+
 class NullObject
   def method_missing(method, *args, &block)
     # ignore
@@ -13,7 +19,11 @@ end
 
 class RSpec::Core::ExampleGroup
   def self.run_all(reporter=nil)
+    @orig_space = RSpec::Mocks.space
+    RSpec::Mocks.space = RSpec::Mocks::Space.new
     run(reporter || NullObject.new)
+  ensure
+    RSpec::Mocks.space = @orig_space
   end
 end
 
@@ -41,12 +51,10 @@ def in_editor?
 end
 
 RSpec.configure do |c|
-  # c.mock_with :rspec
+  c.color_enabled = !in_editor?
   c.filter_run :focused => true
   c.run_all_when_everything_filtered = true
-  c.color_enabled = !in_editor?
   c.alias_example_to :fit, :focused => true
-  c.profile_examples = false
   c.formatter = :documentation
   c.around do |example|
     sandboxed { example.run }
