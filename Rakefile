@@ -5,7 +5,7 @@ begin
   Jeweler::Tasks.new do |gem|
     gem.name = "rspec-unit"
     gem.summary = %Q{test/unit compatibility for RSpec 2.}
-    gem.description = File.read('README.md').sub(/\A.*^## Summary\s*$\s*(.*?)\s*^#+\s.*\Z/m, '\1')
+    gem.description = gem.summary # File.read('README.md').sub(/\A.*^## Summary\s*$\s*(.*?)\s*^#+\s.*\Z/m, '\1')
     gem.email = "glv@vanderburg.org"
     gem.homepage = "http://github.com/glv/rspec-unit"
     gem.authors = ["Glenn Vanderburg"]
