@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Glenn Vanderburg"]
-  s.date = %q{2010-09-13}
+  s.date = %q{2010-09-15}
   s.description = %q{rspec-unit adds support for test/unit-style assertions and test
 cases to RSpec 2.  This is useful for piecemeal conversions of your
 test suite (in either direction), mixing styles, or if you simply
