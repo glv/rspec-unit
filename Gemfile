@@ -5,7 +5,7 @@ gem 'rspec', '= 2.0.0.beta.22'
 
 group :test do
   gem 'rake',        '>= 0.8.7'
-  gem 'rcov',        '>= 0.9.9'
+  #gem 'rcov',        '>= 0.9.9'
 end
 
 group :release do

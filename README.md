@@ -58,7 +58,7 @@ in many ways.
 
 Currently, test/unit compatibility is much more limited than in 
 RSpec 1.  The goal is not to make RSpec 2 a drop-in replacement for
-test/unit; rather, we have two more limited goals:
+test/unit; rather, I have three more limited goals:
 
 1. to allow RSpec 2 examples to easily make use of test/unit assertions
    in cases where those assertions are valuable, or where assertions
@@ -66,8 +66,9 @@ test/unit; rather, we have two more limited goals:
 2. to make it *easy* for a project to switch an existing test/unit
    suite over to run under RSpec, as the start of a gradual, piecemeal
    conversion to RSpec.
+3. to demonstrate how to extend RSpec 2.
    
-As such, there are some things we don''t support:
+As such, there are some things that are not supported:
 
 * The top-level module name is different.  For example, one requires 
   `rspec/unit` rather than `test/unit`, and extends `RSpec::Unit::TestCase` 
@@ -79,37 +80,8 @@ As such, there are some things we don''t support:
 * All test output and summaries are in RSpec style; test/unit-compatible
   output is not supported.
   
-We will certainly consider supporting those things if there is demand.
-
-I originally wrote this test/unit compatibility gem for Micronaut, a
-lightweight RSpec clone by Chad Humphries.  Micronaut has been rolled
-into RSpec as the core of RSpec 2, and I was able to move the test/unit
-compatibility over with minimal changes.
-
-The point of this gem is not that I think test/unit is a better way
-to write tests than the RSpec style.  I admit that I'm a TDD oldtimer
-who sees RSpec as mostly a cosmetic (rather than fundamental) change,
-but that doesn't mean it's not an important change.  My curmudgeonly
-nature has its limits, and I do find specs a big improvement.
-
-So why rspec-unit?  Three reasons:
-
-1. I wanted to show off the generality of Micronaut's (and now RSpec's)
-   architecture.  I hope rspec-unit can serve as an example for anyone 
-   who wants to experiment with new ways of expressing tests and specs 
-   on top of RSpec.
-2. Many projects with existing test/unit test suites might want to
-   benefit from the [metadata goodness][metadata] in RSpec 2, or begin
-   a gradual, piecemeal change to an RSpec style.  That's pretty
-   easy to do with rspec-unit.
-3. Even when writing specs and examples, I frequently encounter
-   cases where an assertion is more expressive than a `should`
-   expression.  It's nice just to have assertions supported within
-   RSpec examples.
+I will certainly consider supporting those things if there is demand.
       
-[uth]: http://blog.thinkrelevance.com/2009/4/1/micronaut-innovation-under-the-hood
-[metadata]: http://blog.thinkrelevance.com/2009/3/26/introducing-micronaut-a-lightweight-bdd-framework
-
 ## To Do
 
 It would be nice to try using the assertion code from minitest,

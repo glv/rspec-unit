@@ -229,7 +229,7 @@ describe "RSpec::Unit::TestCase" do
     
     it "sets :caller" do
       @foo.metadata[:example_group][:caller].first.should =~ Regexp.new(Regexp.escape(@foo.metadata[:example_group][:location]))
-      @foo.metadata[:example_group][:caller].size.should == @caller_at_foo_definition.size + 3
+      @foo.metadata[:example_group][:caller].size.should be_>(@caller_at_foo_definition.size)
     end
     
     it "has nil for :block and :describes" do
@@ -310,7 +310,7 @@ describe "RSpec::Unit::TestCase" do
         def test_baz; end
       end
       test_baz_metadata[:caller].first.should match(/^#{Regexp.escape(@foo.examples.first.metadata[:location])}/)
-      test_baz_metadata[:caller].size.should == caller.size + 3
+      test_baz_metadata[:caller].size.should be_>(caller.size)
     end        
   
     it "records test_info metadata for next test method" do
