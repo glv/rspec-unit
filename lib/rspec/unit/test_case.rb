@@ -85,7 +85,7 @@ module RSpec
       end
               
       def self.test_methods
-        public_instance_methods(true).select{|m| test_method?(m)}
+        public_instance_methods(true).select{|m| test_method?(m)}.map{|m| m.to_s}
       end
       
       def self.number_of_tests

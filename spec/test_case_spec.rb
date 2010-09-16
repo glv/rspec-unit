@@ -309,7 +309,7 @@ describe "RSpec::Unit::TestCase" do
       @foo.class_eval do
         def test_baz; end
       end
-      test_baz_metadata[:caller].first.should == @foo.examples.first.metadata[:location]
+      test_baz_metadata[:caller].first.should match(/^#{Regexp.escape(@foo.examples.first.metadata[:location])}/)
       test_baz_metadata[:caller].size.should == caller.size + 3
     end        
   

@@ -366,7 +366,8 @@ EOT
         end
       end
 
-      UncaughtThrow = {NameError => /^uncaught throw \`(.+)\'$/,
+      UncaughtThrow = {ArgumentError => /^uncaught throw :?(.+)$/,
+                       NameError => /^uncaught throw \`(.+)\'$/,
                        ThreadError => /^uncaught throw \`(.+)\' in thread /} #`
 
       ##
@@ -390,11 +391,11 @@ EOT
             end
             full_message = build_message(message, "<?> should have been thrown.", expected_symbol)
             assert_block(full_message){caught}
-          rescue NameError, ThreadError => error
+          rescue ArgumentError, NameError, ThreadError => error
             if UncaughtThrow[error.class] !~ error.message
               raise error
             end
-            full_message = build_message(message, "<?> expected to be thrown but\n<?> was thrown.", expected_symbol, $1.intern)
+            full_message = build_message(message, "<?> expected to be thrown but\n<?> was thrown.", expected_symbol, $1.to_sym)
             flunk(full_message)
           end
         end
@@ -414,11 +415,11 @@ EOT
           assert(block_given?, "Should have passed a block to assert_nothing_thrown")
           begin
             proc.call
-          rescue NameError, ThreadError => error
+          rescue ArgumentError, NameError, ThreadError => error
             if UncaughtThrow[error.class] !~ error.message
               raise error
             end
-            full_message = build_message(message, "<?> was thrown when nothing was expected", $1.intern)
+            full_message = build_message(message, "<?> was thrown when nothing was expected", $1.to_sym)
             flunk(full_message)
           end
           assert(true, "Expected nothing to be thrown")
