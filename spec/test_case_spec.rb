@@ -302,7 +302,6 @@ describe "RSpec::Unit::TestCase" do
         def test_baz; end
       end
       test_baz_metadata[:example_group].should == @foo.metadata[:example_group]
-      test_baz_metadata[:behaviour].should == @foo.metadata[:example_group]
     end
     
     it "sets :caller" do
