@@ -12,7 +12,7 @@ begin
     gem.rubyforge_project = "rspec-unit"
     gem.add_dependency('rspec', '~> 2.0')
     gem.has_rdoc = false
-    gem.files =  FileList["[A-Z]*", "{bin,lib,spec}/**/*"] 
+    gem.files =  FileList["[A-Z]*", "{bin,lib,spec}/**/*"].exclude('**/*.rbc')
     gem.rubyforge_project = 'glv' 
     # gem is a Gem::Specification... see http://www.rubygems.org/read/chapter/20 for additional settings
   end

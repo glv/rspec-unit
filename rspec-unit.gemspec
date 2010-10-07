@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Glenn Vanderburg"]
-  s.date = %q{2010-10-06}
+  s.date = %q{2010-10-07}
   s.description = %q{test/unit compatibility for RSpec 2.}
   s.email = %q{glv@vanderburg.org}
   s.extra_rdoc_files = [
@@ -22,22 +22,14 @@ Gem::Specification.new do |s|
      "LICENSE",
      "README.md",
      "Rakefile",
-     "Rakefile.compiled.rbc",
      "VERSION.yml",
      "lib/rspec-unit.rb",
-     "lib/rspec-unit.rbc",
      "lib/rspec/unit.rb",
-     "lib/rspec/unit.rbc",
      "lib/rspec/unit/assertions.rb",
-     "lib/rspec/unit/assertions.rbc",
      "lib/rspec/unit/test_case.rb",
-     "lib/rspec/unit/test_case.rbc",
      "spec/assertions_spec.rb",
-     "spec/assertions_spec.rbc",
      "spec/spec_helper.rb",
-     "spec/spec_helper.rbc",
-     "spec/test_case_spec.rb",
-     "spec/test_case_spec.rbc"
+     "spec/test_case_spec.rb"
   ]
   s.homepage = %q{http://github.com/glv/rspec-unit}
   s.rdoc_options = ["--charset=UTF-8"]
