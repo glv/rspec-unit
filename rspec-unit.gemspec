@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{rspec-unit}
-  s.version = "0.9.23"
+  s.version = "1.0.0"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Glenn Vanderburg"]
-  s.date = %q{2010-10-07}
+  s.date = %q{2010-10-10}
   s.description = %q{test/unit compatibility for RSpec 2.}
   s.email = %q{glv@vanderburg.org}
   s.extra_rdoc_files = [
@@ -35,7 +35,7 @@ Gem::Specification.new do |s|
   s.rdoc_options = ["--charset=UTF-8"]
   s.require_paths = ["lib"]
   s.rubyforge_project = %q{glv}
-  s.rubygems_version = %q{1.3.7}
+  s.rubygems_version = %q{1.3.6}
   s.summary = %q{test/unit compatibility for RSpec 2.}
   s.test_files = [
     "spec/assertions_spec.rb",
@@ -47,7 +47,7 @@ Gem::Specification.new do |s|
     current_version = Gem::Specification::CURRENT_SPECIFICATION_VERSION
     s.specification_version = 3
 
-    if Gem::Version.new(Gem::VERSION) >= Gem::Version.new('1.2.0') then
+    if Gem::Version.new(Gem::RubyGemsVersion) >= Gem::Version.new('1.2.0') then
       s.add_runtime_dependency(%q<rspec>, ["~> 2.0"])
     else
       s.add_dependency(%q<rspec>, ["~> 2.0"])
