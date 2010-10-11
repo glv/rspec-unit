@@ -1,7 +1,7 @@
 source :gemcutter
 
 # gem 'bundler', '>= 0.9.16'
-gem 'rspec', '= 2.0.0.rc'
+gem 'rspec', '= 2.0.0'
 
 group :test do
   gem 'rake',        '>= 0.8.7'
