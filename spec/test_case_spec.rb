@@ -197,6 +197,31 @@ describe "RSpec::Unit::TestCase" do
     end
   end
   
+  describe "find_caller_lines" do
+    it "returns [] if the method name is not found" do
+      @foo.send(:find_caller_lines, 'wrong').should be_empty
+      bar = Class.new(@foo)
+      bar.send(:find_caller_lines, 'wrong').should be_empty
+    end
+    
+    it "returns a stack trace array if the name is found in caller_lines" do
+      @foo.class_eval do
+        def test_bar; end
+      end
+      
+      @foo.send(:find_caller_lines, 'test_bar').should_not be_empty
+    end
+
+    it "returns a stack trace array if the name is found in the parent's caller_lines" do
+      @foo.class_eval do
+        def test_bar; end
+      end
+      bar = Class.new(@foo)
+      
+      bar.send(:find_caller_lines, 'test_bar').should_not be_empty
+    end
+  end
+  
   describe "test class metadata" do
     before do
       class SampleTestCaseForName < RSpec::Unit::TestCase
@@ -226,12 +251,7 @@ describe "RSpec::Unit::TestCase" do
     it "sets :location to file_path and line_number" do
       @foo.metadata[:example_group][:location].should == "#{__FILE__}:#{@foo_definition_line}"
     end
-    
-    it "sets :caller" do
-      @foo.metadata[:example_group][:caller].first.should =~ Regexp.new(Regexp.escape(@foo.metadata[:example_group][:location]))
-      @foo.metadata[:example_group][:caller].size.should be_>(@caller_at_foo_definition.size)
-    end
-    
+        
     it "has nil for :block and :describes" do
       @foo.metadata[:example_group][:block].should be_nil
       @foo.metadata[:example_group][:describes].should be_nil
@@ -304,14 +324,6 @@ describe "RSpec::Unit::TestCase" do
       test_baz_metadata[:example_group].should == @foo.metadata[:example_group]
     end
     
-    it "sets :caller" do
-      @foo.class_eval do
-        def test_baz; end
-      end
-      test_baz_metadata[:caller].first.should match(/^#{Regexp.escape(@foo.examples.first.metadata[:location])}/)
-      test_baz_metadata[:caller].size.should be_>(caller.size)
-    end        
-  
     it "records test_info metadata for next test method" do
       @foo.class_eval do
         test_info :foo => :bar
@@ -327,6 +339,39 @@ describe "RSpec::Unit::TestCase" do
         def test_quux; end
       end
       find_example(@foo, 'test_quux').metadata[:foo].should be_nil
+    end
+    
+    context "inherited methods" do
+      def test_baz_metadata
+        find_example(@bar, 'test_baz').metadata
+      end
+
+      it "sets :file_path to the file where the method is defined" do
+        @foo.class_eval do
+          def test_baz; end
+        end
+        @bar = Class.new(@foo)
+        
+        test_baz_metadata[:file_path].should == __FILE__
+      end
+
+      it "sets :line_number to the line where the method definition begins" do
+        @foo.class_eval do
+          def test_baz; end
+        end
+        @bar = Class.new(@foo)
+
+        test_baz_metadata[:line_number].should == (__LINE__ - 4)
+      end
+
+      it "sets :location to file path and line number" do
+        @foo.class_eval do
+          def test_baz; end
+        end
+        @bar = Class.new(@foo)
+        
+        test_baz_metadata[:location].should == "#{__FILE__}:#{__LINE__-4}"
+      end
     end    
   end
   
