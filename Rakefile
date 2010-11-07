@@ -10,7 +10,7 @@ begin
     gem.homepage = "http://github.com/glv/rspec-unit"
     gem.authors = ["Glenn Vanderburg"]
     gem.rubyforge_project = "rspec-unit"
-    gem.add_dependency('rspec', '~> 2.0')
+    gem.add_dependency('rspec', '~> 2.1')
     gem.has_rdoc = false
     gem.files =  FileList["[A-Z]*", "{bin,lib,spec}/**/*"].exclude('**/*.rbc')
     gem.rubyforge_project = 'glv' 

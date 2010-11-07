@@ -23,11 +23,8 @@ module RSpec
         
         install_setup_and_teardown(klass)
                   
-        klass.set_it_up(test_case_name(klass))
-        md = klass.metadata
-        md[:example_group][:test_unit] = true
-        md[:example_group][:file_path], md[:example_group][:line_number] = md.send(:file_and_line_number_from, caller)
-        md[:example_group][:location] = md.send(:location_from, md[:example_group])
+        klass.set_it_up(test_case_name(klass), {:caller => caller})
+        klass.metadata[:example_group][:test_unit] = true
         children << klass
         world.example_groups << klass
       end
@@ -107,12 +104,10 @@ module RSpec
       
       def self.tests
         @tests ||= test_methods.sort.map do |m|
-          meta = (test_method_metadata[m] || {}).merge({:full_description => "#{display_name}##{m}",
+          meta = (test_method_metadata[m] || {}).merge({:caller => find_caller_lines(m),
+                                                        :full_description => "#{display_name}##{m}",
                                                         :test_unit => true})
-          example = Core::Example.new(self, m, meta, proc{execute(m)})
-          example.metadata[:file_path], example.metadata[:line_number] = example.metadata.send(:file_and_line_number_from, find_caller_lines(m))
-          example.metadata[:location] = example.metadata.send(:location_from, example.metadata)
-          example
+          Core::Example.new(self, m, meta, proc{execute(m)})
         end
       end
 
