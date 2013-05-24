@@ -9,7 +9,7 @@ module RSpec
   end
   
   module Unit
-    class AssertionFailedError < RSpec::Matchers::MatcherError
+    class AssertionFailedError < StandardError
     end
     
     class TestCase < RSpec::Core::ExampleGroup
